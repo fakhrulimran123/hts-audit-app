@@ -6,6 +6,7 @@ import numpy as np
 import pydeck as pdk
 
 st.set_page_config(layout="wide")
+st.set_page_config(menu_items="dict")
 st.title("📊 HTS Branch Audit Dashboard")
 
 # Upload Excel file
