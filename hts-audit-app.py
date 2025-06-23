@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pydeck as pdk
 
-st.set_page_config(layout="wide")
-st.set_page_config(menu_items="dict")
+st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 st.title("📊 HTS Branch Audit Dashboard")
 
 # Upload Excel file
