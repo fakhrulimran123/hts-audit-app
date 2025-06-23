@@ -3,6 +3,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+import pydeck as pdk
 
 st.set_page_config(layout="wide")
 st.title("📊 HTS Branch Audit Dashboard")
@@ -32,8 +33,37 @@ if uploaded_file:
 
     # Map Section
     st.subheader("📍 Branch Location Map")
+
     map_df = df.dropna(subset=['LATITUDE', 'LONGITUDE'])
-    st.map(map_df[['LATITUDE', 'LONGITUDE']])
+    unique_branches = map_df[['BRANCH', 'LATITUDE', 'LONGITUDE']].drop_duplicates()
+
+    selected_map_branches = st.multiselect("Filter map by Branch:", unique_branches['BRANCH'].unique(), default=unique_branches['BRANCH'].unique())
+    filtered_map_df = unique_branches[unique_branches['BRANCH'].isin(selected_map_branches)]
+
+    # Pydeck map with tooltips
+    layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=filtered_map_df,
+        get_position='[LONGITUDE, LATITUDE]',
+        get_color='[255, 0, 0, 160]',
+        get_radius=500,
+        pickable=True
+    )
+
+    view_state = pdk.ViewState(
+        latitude=filtered_map_df['LATITUDE'].mean(),
+        longitude=filtered_map_df['LONGITUDE'].mean(),
+        zoom=6,
+        pitch=0
+    )
+
+    r = pdk.Deck(
+        layers=[layer],
+        initial_view_state=view_state,
+        tooltip={"text": "{BRANCH}"}
+    )
+
+    st.pydeck_chart(r)
 
     # Missing Audit Years Detection
     st.subheader("🕵️ Branches Missing Audit Years")
